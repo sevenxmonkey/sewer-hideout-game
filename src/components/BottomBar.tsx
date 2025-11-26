@@ -2,12 +2,15 @@ import React from 'react';
 import { useLocalization } from '../store/LocalizationContext';
 import { useGame } from '../store/GameContext';
 import type { IExit } from '../interfaces/IMapState';
+import { itemDefinitions } from '../data/items';
 
 const BottomBar: React.FC = () => {
   const { t } = useLocalization();
-  const { state, moveTo } = useGame();
+  const { state, moveTo, consumeItem } = useGame();
   const currentLocation = state.map.allLocations[state.player.locationId];
   const currentExits: IExit[] = currentLocation?.exits ?? [];
+
+  const inv = state.player.inventory ?? [];
 
   return (
     <footer className="bottom-bar">
@@ -16,11 +19,23 @@ const BottomBar: React.FC = () => {
         <div className="panel inventory">
           <div className="panel-label">{t('ui.inventory')}</div>
           <div className="inventory-grid">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="inv-item item">
-                Item {i + 1}
-              </div>
-            ))}
+            {inv.map((instance, idx) => {
+              const def = itemDefinitions[instance.id];
+              const name = def ? t(def.nameKey) : instance.id;
+              return (
+                <div
+                  key={`${instance.id}-${idx}`}
+                  className="inv-item item"
+                  role="button"
+                  onClick={() => consumeItem(instance.id)}
+                >
+                  <div>
+                    <div>{name}</div>
+                    <div style={{ fontSize: 12, opacity: 0.8 }}>{instance.qty}x</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

@@ -33,8 +33,14 @@
     "scavenge": "Scavenge",
     "trade": "Trade"
   },
+  "item": {
+    "apple": { "name": "Apple", "desc": "A small red apple. Restores satiety." },
+    "bandage": { "name": "Bandage", "desc": "A simple bandage. Restores health." },
+    "coffee": { "name": "Coffee", "desc": "A bitter drink. Restores some sanity." }
+  },
   "ui": {
     "move": "Move",
+    "satiety": "Satiety",
     "time": "Time",
     "day": "Day",
     "actions": "Actions",
@@ -42,7 +48,6 @@
     "inventory": "Inventory",
     "npcs": "NPCs",
     "move_to": "Move to",
-    "hunger": "Hunger",
     "sanity": "Sanity",
     "health": "Health",
     "language": "Language"

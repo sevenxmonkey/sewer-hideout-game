@@ -33,16 +33,21 @@
     "scavenge": "搜刮",
     "trade": "交易"
   },
+  "item": {
+    "apple": { "name": "苹果", "desc": "一个小苹果，能缓解饥饿。" },
+    "bandage": { "name": "绷带", "desc": "简单的绷带，能够恢复健康。" },
+    "coffee": { "name": "咖啡", "desc": "苦涩的咖啡，能恢复一点精神。" }
+  },
   "ui": {
     "move": "移动",
     "inventory": "物品",
-    "npcs": "人物",
+    "npcs": "NPC",
     "move_to": "前往",
     "time": "时间",
     "day": "天",
     "actions": "行动",
     "location": "位置",
-    "hunger": "饱食度",
+    "satiety": "饱食度",
     "sanity": "理智",
     "health": "健康",
     "language": "语言"
