@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <LocalizationProvider>
       <GameProvider>
         <div className="App">
-          <SceneHeader />
+          {/* <SceneHeader /> */}
           <StatusBar />
           <SceneView />
         </div>

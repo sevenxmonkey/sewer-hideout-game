@@ -1,11 +1,22 @@
-*{
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+* {
+  box-sizing: border-box;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+html,
+body,
+#root,
+.App {
+  height: 100%;
+  overflow: hidden; /* 禁止滚动 */
+  touch-action: none; /* 禁止手势滚动/缩放（部分浏览器） */
+  overscroll-behavior: none; /* 防止滚动穿透 / 拖拽刷新（非 iOS Safari） */
 }
 
 body {
-  margin: 20px;
   background-color: black;
   color: white;
+  margin: 0;
 }
 
 button {
@@ -30,7 +41,7 @@ select {
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
   }
 
   & option {
@@ -39,11 +50,16 @@ select {
   }
 }
 
-/* Scene header layout and select override */
-.scene-header {
-  display: flex;
-//   justify-content: space-between;
-  gap: 10px;
-  align-items:baseline
-}
+// /* Scene header layout and select override */
+// .scene-header {
+//   display: flex;
+//   //   justify-content: space-between;
+//   gap: 10px;
+//   align-items: baseline;
+// }
 
+.App {
+  width: 100vw;
+  height: 100vh;
+  border: 2px solid white;
+}
