@@ -1,12 +1,14 @@
 import React from 'react';
 import { useGame } from '../store/GameContext';
 import { useLocalization } from '../store/LocalizationContext';
+import { getNpcPresencesAt } from '../data/npcs';
 
 export const SceneView: React.FC = () => {
   const { state, performLocalAction } = useGame();
   const { t } = useLocalization();
 
   const loc = state.map.allLocations[state.player.locationId];
+  const npcPresences = getNpcPresencesAt(state.player.locationId, state.runtime.gameTime);
 
   return (
     <div className="scene-view">
@@ -21,11 +23,17 @@ export const SceneView: React.FC = () => {
           </button>
         ))}
       </div>
-      <p>你看到了这些人</p>
+      <p>{t('ui.npcs')}</p>
       <div>
-        {['NPC A', 'NPC B', 'NPC C'].map((n) => (
-          <button key={n}>{n}</button>
-        ))}
+        {npcPresences.length === 0 ? (
+          <span style={{ opacity: 0.7 }}>{t('npc.none')}</span>
+        ) : (
+          npcPresences.map(({ npc, slot }) => (
+            <button key={npc.id} onClick={() => console.log(t(slot.interactionKey))}>
+              {t(npc.nameKey)}
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

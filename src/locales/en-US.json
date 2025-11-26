@@ -43,6 +43,34 @@
     "coffee": { "name": "Coffee", "desc": "A bitter drink. Restores some sanity." },
     "sweets": { "name": "Sweets", "desc": "Candy that lifts spirits." }
   },
+  "npc": {
+    "none": "No one seems to be here.",
+    "mara": {
+      "name": "Mara the Fixer",
+      "afternoon_black_market": "In the half-lit alleys of the market, Mara casually asks what you’re looking for, hinting she can move almost anything—if your goods are interesting enough.",
+      "night_black_market": "Under the cover of night, Mara’s tone turns sharper; she warns you that people who show up empty-handed rarely get a second chance here."
+    },
+    "old_thom": {
+      "name": "Old Thom",
+      "morning_dock": "Old Thom nods toward the river, muttering about fresh crates drifting in with the morning current and telling you to keep your eyes open.",
+      "evening_dock": "As the light fades, Old Thom warns you that once it’s dark, the dock belongs more to raiders than scavengers."
+    },
+    "sister_hana": {
+      "name": "Sister Hana",
+      "day_streets": "Sister Hana stops you on the street, offering a brief prayer and a reminder that even in this city, there are still people worth trusting.",
+      "evening_sewer": "Finding you back in the hideout, Sister Hana sits for a moment, asking softly if the city felt heavier today than yesterday."
+    },
+    "rat_king": {
+      "name": "The Rat King",
+      "night_tunnel": "From a corner of the tunnel, the Rat King whispers about shifting patrol routes, trading secrets for a glint of metal in your hand.",
+      "dawn_tunnel": "At the edge of dawn, the Rat King seems restless, hinting that something big is moving aboveground and urging you to stay below a little longer."
+    },
+    "station_doctor": {
+      "name": "Station Doctor",
+      "day_station": "The Station Doctor eyes your wounds with a professional frown, advising you to clean them properly before the rust and dust sink deeper.",
+      "night_station": "With tired eyes, the Station Doctor tells you he’s patched up too many people today and suggests you avoid adding to that number tonight."
+    }
+  },
   "ui": {
     "move": "Move",
     "satiety": "Satiety",
