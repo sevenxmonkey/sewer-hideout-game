@@ -8,7 +8,7 @@
  */
 export interface IPlayerState {
   health: number; // 健康值 (0-100)
-  hunger: number; // 饥饿度 (0-100, 越高越饿)
+  hunger: number; // 饱食度度 (0-100, 越高越饿)
   sanity: number; // 精神值 (0-100)
   dirtiness: number; // 干净值 (0-100, 越高越脏)
   combatSkill: number; // 武力值

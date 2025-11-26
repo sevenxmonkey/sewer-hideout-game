@@ -14,6 +14,8 @@ body,
   height: 100%;
   /* 不再全局禁止滚动：允许内部可滚动容器工作，但仍防止滚动穿透/拖拽刷新 */
   overscroll-behavior: none; /* 防止滚动穿透 / 拖拽刷新（非 iOS Safari） */
+
+  font-size: 16px;
 }
 
 /* .App 的高度由 --vh 管理，内部滚动应在各自容器上开启（overflow:auto） */
@@ -58,9 +60,12 @@ button {
   background-color: #333;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 4px 12px;
   cursor: pointer;
-  margin: 1px;
+  margin-right: 8px;
+  font-size: 16px;
+  min-width: 90px;
+  height: 30px;
 }
 
 select {
@@ -142,7 +147,7 @@ select {
 
 .panel-label,
 .item {
-  padding: 2px 4px;
+  padding: 4px;
   margin: 4px;
 }
 
@@ -153,5 +158,6 @@ select {
 }
 
 .time-cost {
-  color: greenyellow;
+  color: rgba(172, 255, 47, 0.7);
+  font-size: 14px;
 }
