@@ -1,4 +1,4 @@
-import type { IGlobalStorage } from '../core/interfaces';
+import type { IGlobalStorage } from '../interfaces';
 import { mapData } from './mapData';
 
 export const initialState: IGlobalStorage = {

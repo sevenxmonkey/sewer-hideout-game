@@ -1,7 +1,7 @@
-import type { IPlayerState } from './IPlayerState';
-import type { IRuntimeState } from './IRuntimeState';
 import type { IMapState } from './IMapState';
 import type { ICondition, IEffect } from './INarrative';
+import { IPlayerState } from './IPlayerState';
+import { IRuntimeState } from './IRuntimeState';
 
 /**
  * @interface IGlobalStorage

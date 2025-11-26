@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import type { IGlobalStorage } from '../core/interfaces';
+import type { IGlobalStorage } from '../interfaces';
 import { initialState } from '../data/initialStates';
 
 type Action =

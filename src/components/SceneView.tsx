@@ -10,6 +10,7 @@ export const SceneView: React.FC = () => {
 
   return (
     <div>
+      <div>--------------{t('ui.location')}--------------</div>
       <div>{t(loc.nameKey)}</div>
       <div>{t(loc.descriptionKey)}</div>
       <div>--------------{t('ui.move')}--------------</div>

@@ -1,4 +1,4 @@
-import type { ILocation } from '../core/interfaces/IMapState';
+import type { ILocation } from '../interfaces/IMapState';
 
 export const mapData: { [id: string]: ILocation } = {
   sewer_hideout: {

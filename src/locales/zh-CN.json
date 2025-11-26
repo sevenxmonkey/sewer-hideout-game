@@ -17,6 +17,7 @@
     "move": "移动",
     "time": "时间",
     "day": "天",
-    "actions": "行动"
+    "actions": "行动",
+    "location": "位置"
   }
 }

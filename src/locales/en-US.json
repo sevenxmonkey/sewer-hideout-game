@@ -17,6 +17,7 @@
     "move": "Move",
     "time": "Time",
     "day": "Day",
-    "actions": "Actions"
+    "actions": "Actions",
+    "location": "Location"
   }
 }
