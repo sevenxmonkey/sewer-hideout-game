@@ -1,0 +1,22 @@
+{
+  "location": {
+    "sewer_hideout": {
+      "name": "下水道据点",
+      "desc": "城市下方潮湿昏暗的据点。"
+    },
+    "city_streets": {
+      "name": "城市街道",
+      "desc": "拥挤且危险的街道。"
+    }
+  },
+  "action": {
+    "rest": "休息",
+    "scavenge": "搜刮"
+  },
+  "ui": {
+    "move": "移动",
+    "time": "时间",
+    "day": "天",
+    "actions": "行动"
+  }
+}

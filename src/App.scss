@@ -1,4 +1,17 @@
+* {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
 body {
+  margin: 0;
   background-color: black;
   color: white;
+}
+
+button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
 }

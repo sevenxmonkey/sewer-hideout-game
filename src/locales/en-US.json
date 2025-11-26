@@ -1,0 +1,22 @@
+{
+  "location": {
+    "sewer_hideout": {
+      "name": "Sewer Hideout",
+      "desc": "A damp, dim hideout beneath the city."
+    },
+    "city_streets": {
+      "name": "City Streets",
+      "desc": "Busy streets with vendors and danger."
+    }
+  },
+  "action": {
+    "rest": "Rest",
+    "scavenge": "Scavenge"
+  },
+  "ui": {
+    "move": "Move",
+    "time": "Time",
+    "day": "Day",
+    "actions": "Actions"
+  }
+}
