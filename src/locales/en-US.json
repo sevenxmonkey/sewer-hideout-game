@@ -71,6 +71,18 @@
       "night_station": "With tired eyes, the Station Doctor tells you he’s patched up too many people today and suggests you avoid adding to that number tonight."
     }
   },
+  "log": {
+    "scavenge": {
+      "found_generic": "You found something useful among the scraps."
+    },
+    "action": {
+      "rest": "You take a moment to rest and recover your strength.",
+      "trade": "You browse the market stalls, looking for a good deal."
+    },
+    "item": {
+      "used": "You used an item."
+    }
+  },
   "ui": {
     "move": "Move",
     "satiety": "Satiety",

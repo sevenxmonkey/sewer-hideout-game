@@ -25,7 +25,7 @@ export const itemDefinitions: Record<string, IItemDefinition> = {
   soup: {
     id: 'soup',
     nameKey: 'item.soup.name',
-    descriptionKey: 'item.soup.desc',
+    descriptionKey: 'item.soup.name',
     type: 'satiety',
     value: 20,
   },

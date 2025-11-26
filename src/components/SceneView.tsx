@@ -1,14 +1,16 @@
 import React from 'react';
 import { useGame } from '../store/GameContext';
 import { useLocalization } from '../store/LocalizationContext';
-import { getNpcPresencesAt } from '../data/npcs';
+import { getNpcPresencesAt } from '../data/npcData';
 
 export const SceneView: React.FC = () => {
-  const { state, performLocalAction } = useGame();
+  const { state, performLocalAction, talkToNpc } = useGame();
   const { t } = useLocalization();
 
   const loc = state.map.allLocations[state.player.locationId];
   const npcPresences = getNpcPresencesAt(state.player.locationId, state.runtime.gameTime);
+  const localActionLog = state.runtime.localActionLog;
+  const npcLog = state.runtime.npcLog;
 
   return (
     <div className="scene-view">
@@ -23,18 +25,22 @@ export const SceneView: React.FC = () => {
           </button>
         ))}
       </div>
+      {localActionLog && (
+        <p style={{ color: 'yellow', marginTop: '4px', fontSize: '14px' }}>{t(localActionLog)}</p>
+      )}
       <p>{t('ui.npcs')}</p>
       <div>
         {npcPresences.length === 0 ? (
           <span style={{ opacity: 0.7 }}>{t('npc.none')}</span>
         ) : (
           npcPresences.map(({ npc, slot }) => (
-            <button key={npc.id} onClick={() => console.log(t(slot.interactionKey))}>
+            <button key={npc.id} onClick={() => talkToNpc(npc.id, slot.interactionKey)}>
               {t(npc.nameKey)}
             </button>
           ))
         )}
       </div>
+      {npcLog && <p style={{ color: 'yellow', marginTop: '4px', fontSize: '14px' }}>{t(npcLog)}</p>}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { itemDefinitions } from './items';
+import { itemDefinitions } from './itemData';
 
 type ScavengeActionType =
   | 'SCAVENGE'

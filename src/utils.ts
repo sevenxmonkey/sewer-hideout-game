@@ -46,6 +46,13 @@ export function initPreventBodyDrag(): () => void {
   };
 
   const onTouchMove = (e: TouchEvent) => {
+    // Only prevent default if the event is cancelable
+    // If the event is not cancelable, it means scrolling has already started
+    // and we should allow it to continue
+    if (!e.cancelable) {
+      return;
+    }
+
     const curY = e.touches?.[0]?.clientY ?? 0;
     const deltaY = curY - startY;
 
@@ -56,25 +63,32 @@ export function initPreventBodyDrag(): () => void {
     }
 
     const sc = startScroller;
-    // If element cannot scroll, prevent default
-    if (sc.scrollHeight <= sc.clientHeight) {
+
+    // Check if element can actually scroll
+    const canScroll = sc.scrollHeight > sc.clientHeight;
+    if (!canScroll) {
+      // Element cannot scroll, prevent default to avoid body scroll
       e.preventDefault();
       return;
     }
 
+    const isAtTop = sc.scrollTop === 0;
+    const isAtBottom = Math.ceil(sc.scrollTop + sc.clientHeight) >= sc.scrollHeight;
+
     // Scrolling down (finger moving down) when at top -> prevent (so body won't pull)
-    if (deltaY > 0 && sc.scrollTop === 0) {
+    if (deltaY > 0 && isAtTop) {
       e.preventDefault();
       return;
     }
 
     // Scrolling up (finger moving up) when at bottom -> prevent
-    if (deltaY < 0 && Math.ceil(sc.scrollTop + sc.clientHeight) >= sc.scrollHeight) {
+    if (deltaY < 0 && isAtBottom) {
       e.preventDefault();
       return;
     }
 
-    // otherwise allow the scroll inside the element
+    // Otherwise allow the scroll inside the element
+    // Don't call preventDefault() here to allow natural scrolling
   };
 
   document.addEventListener('touchstart', onTouchStart, { passive: true });

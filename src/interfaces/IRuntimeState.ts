@@ -12,5 +12,8 @@ export interface IRuntimeState {
   isRunning: boolean; // 游戏是否在运行 (未暂停/未结束)
   accumulatedMinutes?: number; // 用于累计不足 60 分钟的时间，供饱食度计算使用（可选，默认为 0）
 
+  localActionLog?: string; // 本地行动/道具使用的日志，对应本地化 key
+  npcLog?: string; // NPC 对话的日志，对应本地化 key
+
   // 未来可扩展：majorDecisions: Set<string> (存储关键剧情抉择)
 }

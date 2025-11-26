@@ -1,15 +1,25 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import type { IGlobalStorage } from '../interfaces';
 import type { ILocalAction } from '../interfaces/IMapState';
-import { initialState } from '../data/initialStates';
-import { getRandomScavengeLoot } from '../data/scavengeTables';
+import { initialState } from '../data/initialStateData';
+import {
+  applyTimeAdvance,
+  applySatietyChange,
+  applyInventoryItemUse,
+  applyInventoryItemAdd,
+  type GameCommand,
+  resolveGameCommand,
+  applyGameEffects,
+} from '../domain/gameLogic';
+import { itemDefinitions } from '../data/itemData';
 
 type Action =
-  | { type: 'MOVE'; targetLocationId: string }
-  | { type: 'ADVANCE_TIME'; minutes: number }
-  | { type: 'APPLY_SATIETY_DELTA'; delta: number }
-  | { type: 'USE_ITEM'; itemId: string }
-  | { type: 'ADD_ITEM'; itemId: string; qty?: number };
+  | { type: 'GAME_MOVE'; targetLocationId: string }
+  | { type: 'GAME_TIME_ADVANCE'; minutes: number }
+  | { type: 'GAME_SATIETY_CHANGE'; delta: number }
+  | { type: 'GAME_ITEM_USE'; itemId: string }
+  | { type: 'GAME_ITEM_ADD'; itemId: string; qty?: number }
+  | { type: 'GAME_COMMAND'; command: GameCommand };
 
 type GameContextValue = {
   state: IGlobalStorage;
@@ -18,96 +28,45 @@ type GameContextValue = {
   dispatch: React.Dispatch<Action>;
   consumeItem: (itemId: string) => void;
   performLocalAction: (action: ILocalAction) => void;
+  talkToNpc: (npcId: string, interactionKey: string) => void;
 };
 
 const GameContext = createContext<GameContextValue | undefined>(undefined);
 
 function reducer(state: IGlobalStorage, action: Action): IGlobalStorage {
   switch (action.type) {
-    case 'MOVE': {
+    case 'GAME_MOVE': {
       // only change location here; time advancement handled by advanceTime helper
       return {
         ...state,
         player: { ...state.player, locationId: action.targetLocationId },
       };
     }
-    case 'ADVANCE_TIME': {
-      const newTime = state.runtime.gameTime + action.minutes;
-      const dayIncrement = Math.floor(newTime / 1440) - Math.floor(state.runtime.gameTime / 1440);
-      const updatedGameTime = newTime % 1440;
-
-      // accumulate leftover minutes for hunger calculation
-      const prevAccum = state.runtime.accumulatedMinutes ?? 0;
-      const totalAccum = prevAccum + action.minutes;
-      const satietyDecrease = Math.floor(totalAccum / 60); // satiety decreases over time
-      const newAccum = totalAccum % 60;
-      const newSatiety = Math.max(0, Math.min(100, state.player.satiety - satietyDecrease));
-
-      return {
-        ...state,
-        player: { ...state.player, satiety: newSatiety },
-        runtime: {
-          ...state.runtime,
-          gameTime: updatedGameTime,
-          dayNumber: state.runtime.dayNumber + dayIncrement,
-          accumulatedMinutes: newAccum,
-        },
-      };
-    }
-    case 'APPLY_SATIETY_DELTA': {
-      const newSatiety = Math.max(0, Math.min(100, state.player.satiety + action.delta));
-      return {
-        ...state,
-        player: { ...state.player, satiety: newSatiety },
-      };
-    }
-    case 'USE_ITEM': {
-      const itemId = action.itemId;
-      const inv = state.player.inventory ?? [];
-      const idx = inv.findIndex((it) => it.id === itemId);
-      if (idx === -1) return state; // item not found
-
-      // reduce quantity
-      const newInv = inv.map((it) => ({ ...it }));
-      newInv[idx].qty = Math.max(0, newInv[idx].qty - 1);
-      if (newInv[idx].qty === 0) newInv.splice(idx, 1);
-
-      // apply item effect using itemDefinitions
-      const { itemDefinitions } = require('../data/items');
-      const def = itemDefinitions[itemId];
-      if (!def) {
-        return { ...state, player: { ...state.player, inventory: newInv } };
+    case 'GAME_TIME_ADVANCE':
+      return applyTimeAdvance(state, action.minutes);
+    case 'GAME_SATIETY_CHANGE':
+      return applySatietyChange(state, action.delta);
+    case 'GAME_ITEM_USE': {
+      const newState = applyInventoryItemUse(state, action.itemId);
+      // 添加道具使用的日志，同时清除 NPC log
+      const def = itemDefinitions[action.itemId];
+      if (def) {
+        return {
+          ...newState,
+          runtime: {
+            ...newState.runtime,
+            localActionLog: 'log.item.used',
+            npcLog: undefined, // 清除 NPC log
+          },
+        };
       }
-
-      let player = { ...state.player, inventory: newInv };
-      if (def.type === 'satiety') {
-        const newSatiety = Math.max(0, Math.min(100, player.satiety + def.value));
-        player = { ...player, satiety: newSatiety };
-      } else if (def.type === 'health') {
-        const newHealth = Math.max(0, Math.min(100, player.health + def.value));
-        player = { ...player, health: newHealth };
-      } else if (def.type === 'sanity') {
-        const newSanity = Math.max(0, Math.min(100, player.sanity + def.value));
-        player = { ...player, sanity: newSanity };
-      }
-
-      return { ...state, player };
+      return newState;
     }
-    case 'ADD_ITEM': {
-      const { itemId } = action;
-      const qty = action.qty ?? 1;
-      const inv = state.player.inventory ?? [];
-      const existingIdx = inv.findIndex((it) => it.id === itemId);
-      let newInv;
-      if (existingIdx >= 0) {
-        newInv = inv.map((it, idx) => (idx === existingIdx ? { ...it, qty: it.qty + qty } : it));
-      } else {
-        newInv = [...inv, { id: itemId, qty }];
-      }
-      return {
-        ...state,
-        player: { ...state.player, inventory: newInv },
-      };
+    case 'GAME_ITEM_ADD':
+      return applyInventoryItemAdd(state, action.itemId, action.qty);
+    case 'GAME_COMMAND': {
+      const effects = resolveGameCommand(state, action.command);
+      return applyGameEffects(state, effects);
     }
     default:
       return state;
@@ -121,44 +80,45 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const advanceTime = (minutes: number) => {
     if (minutes <= 0) return;
     // update runtime clock and centralized hunger handled in reducer
-    dispatch({ type: 'ADVANCE_TIME', minutes });
+    dispatch({ type: 'GAME_TIME_ADVANCE', minutes });
   };
 
   const moveTo = (targetLocationId: string) => {
-    // find time cost from current location
     const current = state.map.allLocations[state.player.locationId];
     const exit = current?.exits.find((e) => e.targetLocationId === targetLocationId);
-    const timeCost = exit?.timeCostMinutes ?? 0;
-
-    // perform move (location change)
-    dispatch({ type: 'MOVE', targetLocationId });
-    // then centrally advance time (hunger applied in reducer)
-    advanceTime(timeCost);
+    const timeCostMinutes = exit?.timeCostMinutes ?? 0;
+    const command: GameCommand = { kind: 'MOVE_TO', targetLocationId, timeCostMinutes };
+    dispatch({ type: 'GAME_COMMAND', command });
   };
 
   const consumeItem = (itemId: string) => {
-    dispatch({ type: 'USE_ITEM', itemId });
-  };
-
-  const handleActionEffects = (actionType: string) => {
-    if (!actionType) return;
-    if (actionType.startsWith('SCAVENGE')) {
-      const lootId = getRandomScavengeLoot(actionType);
-      if (lootId) {
-        dispatch({ type: 'ADD_ITEM', itemId: lootId, qty: 1 });
-      }
-    }
+    dispatch({ type: 'GAME_ITEM_USE', itemId });
   };
 
   const performLocalAction = (action: ILocalAction) => {
     if (!action) return;
-    advanceTime(action.timeCostMinutes);
-    handleActionEffects(action.nextActionType);
+    const command: GameCommand = {
+      kind: 'PERFORM_LOCAL_ACTION',
+      action,
+      timeCostMinutes: action.timeCostMinutes,
+    };
+    dispatch({ type: 'GAME_COMMAND', command });
+  };
+
+  const talkToNpc = (npcId: string, interactionKey: string) => {
+    // NPC 对话消耗 5 分钟
+    const command: GameCommand = {
+      kind: 'TALK_TO_NPC',
+      npcId,
+      interactionKey,
+      timeCostMinutes: 5,
+    };
+    dispatch({ type: 'GAME_COMMAND', command });
   };
 
   return (
     <GameContext.Provider
-      value={{ state, moveTo, advanceTime, dispatch, consumeItem, performLocalAction }}
+      value={{ state, moveTo, advanceTime, dispatch, consumeItem, performLocalAction, talkToNpc }}
     >
       {children}
     </GameContext.Provider>

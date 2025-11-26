@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocalization } from '../store/LocalizationContext';
 import { useGame } from '../store/GameContext';
 import type { IExit } from '../interfaces/IMapState';
-import { itemDefinitions } from '../data/items';
+import { itemDefinitions } from '../data/itemData';
 
 const BottomBar: React.FC = () => {
   const { t } = useLocalization();
