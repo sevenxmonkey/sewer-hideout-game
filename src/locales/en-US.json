@@ -1,4 +1,8 @@
 {
+  "info": {
+    "game_title": "Sewer Hideout",
+    "welcome_message": "Welcome to the Sewer Hideout, a city underground world full of danger and opportunity. Here, you must manage your resources, maintain your health and sanity, and explore the unknown for a chance to survive. Good luck, survivor!"
+  },
   "location": {
     "sewer_hideout": {
       "name": "Sewer Hideout",
@@ -7,17 +11,38 @@
     "city_streets": {
       "name": "City Streets",
       "desc": "Busy streets with vendors and danger."
+    },
+    "underground_tunnel": {
+      "name": "Underground Tunnel",
+      "desc": "A narrow tunnel that connects the undercity."
+    },
+    "abandoned_station": {
+      "name": "Abandoned Station",
+      "desc": "An old transit station, half-collapsed and eerily quiet."
+    },
+    "riverside_dock": {
+      "name": "Riverside Dock",
+      "desc": "A muddy dock by the river where supplies sometimes wash ashore."
+    },
+    "black_market": {
+      "name": "Black Market",
+      "desc": "A shadowy market where questionable goods change hands."
     }
   },
   "action": {
     "rest": "Rest",
-    "scavenge": "Scavenge"
+    "scavenge": "Scavenge",
+    "trade": "Trade"
   },
   "ui": {
     "move": "Move",
     "time": "Time",
     "day": "Day",
     "actions": "Actions",
-    "location": "Location"
+    "location": "Location",
+    "hunger": "Hunger",
+    "sanity": "Sanity",
+    "health": "Health",
+    "language": "Language"
   }
 }

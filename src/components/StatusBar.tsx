@@ -13,13 +13,14 @@ export const StatusBar: React.FC = () => {
   return (
     <div>
       <div>
-        {t('ui.day')}: {runtime.dayNumber}{' '}
+        {t('ui.day')}: {runtime.dayNumber}
       </div>
       <div>
         {t('ui.time')}: {String(hh).padStart(2, '0')}:{String(mm).padStart(2, '0')}
       </div>
       <div>
-        HP: {player.health} | Hunger: {player.hunger} | Sanity: {player.sanity}
+        {t('ui.health')}: {player.health} | {t('ui.hunger')}: {player.hunger} | {t('ui.sanity')}:{' '}
+        {player.sanity}
       </div>
     </div>
   );

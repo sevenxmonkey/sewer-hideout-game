@@ -15,7 +15,8 @@ interface ILocalizationContext {
 const LocalizationContext = createContext<ILocalizationContext | undefined>(undefined);
 
 export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocale] = useState<LocaleKey>('en-US');
+  // default to Chinese as requested
+  const [locale, setLocale] = useState<LocaleKey>('zh-CN');
   const resources: Record<LocaleKey, Locales> = useMemo(
     () => ({ 'en-US': en as Locales, 'zh-CN': zh as Locales }),
     []

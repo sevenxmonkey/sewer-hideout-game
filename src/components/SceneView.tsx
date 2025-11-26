@@ -11,8 +11,9 @@ export const SceneView: React.FC = () => {
   return (
     <div>
       <div>--------------{t('ui.location')}--------------</div>
-      <div>{t(loc.nameKey)}</div>
+      <div style={{ color: 'greenyellow', marginBottom: '4px' }}>{t(loc.nameKey)}</div>
       <div>{t(loc.descriptionKey)}</div>
+      <div style={{ color: 'red', marginTop: '4px' }}>你现在感到很饿</div>
       <div>--------------{t('ui.move')}--------------</div>
       <div>
         {loc.exits.map((e) => (

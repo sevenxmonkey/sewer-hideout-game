@@ -1,9 +1,9 @@
-* {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+*{
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 body {
-  margin: 0;
+  margin: 20px;
   background-color: black;
   color: white;
 }
@@ -14,4 +14,36 @@ button {
   border: none;
   padding: 8px 16px;
   cursor: pointer;
+  margin: 1px;
 }
+
+select {
+  background: black;
+  color: white;
+  border: 1px solid white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+  }
+
+  & option {
+    background: black;
+    color: white;
+  }
+}
+
+/* Scene header layout and select override */
+.scene-header {
+  display: flex;
+//   justify-content: space-between;
+  gap: 10px;
+  align-items:baseline
+}
+
