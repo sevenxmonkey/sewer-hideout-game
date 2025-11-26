@@ -35,8 +35,13 @@
   },
   "item": {
     "apple": { "name": "Apple", "desc": "A small red apple. Restores satiety." },
+    "bread": { "name": "Bread", "desc": "A piece of dry bread. Slightly fills hunger." },
+    "canned_beans": { "name": "Canned Beans", "desc": "A can of beans. Very filling." },
+    "soup": { "name": "Soup", "desc": "A warm soup. Comforting and filling." },
     "bandage": { "name": "Bandage", "desc": "A simple bandage. Restores health." },
-    "coffee": { "name": "Coffee", "desc": "A bitter drink. Restores some sanity." }
+    "medkit": { "name": "Medkit", "desc": "A medical kit. Restores a lot of health." },
+    "coffee": { "name": "Coffee", "desc": "A bitter drink. Restores some sanity." },
+    "sweets": { "name": "Sweets", "desc": "Candy that lifts spirits." }
   },
   "ui": {
     "move": "Move",

@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import type { IGlobalStorage } from '../interfaces';
+import type { ILocalAction } from '../interfaces/IMapState';
 import { initialState } from '../data/initialStates';
+import { getRandomScavengeLoot } from '../data/scavengeTables';
 
 type Action =
   | { type: 'MOVE'; targetLocationId: string }
   | { type: 'ADVANCE_TIME'; minutes: number }
   | { type: 'APPLY_SATIETY_DELTA'; delta: number }
-  | { type: 'USE_ITEM'; itemId: string };
+  | { type: 'USE_ITEM'; itemId: string }
+  | { type: 'ADD_ITEM'; itemId: string; qty?: number };
 
 type GameContextValue = {
   state: IGlobalStorage;
@@ -14,6 +17,7 @@ type GameContextValue = {
   advanceTime: (minutes: number) => void;
   dispatch: React.Dispatch<Action>;
   consumeItem: (itemId: string) => void;
+  performLocalAction: (action: ILocalAction) => void;
 };
 
 const GameContext = createContext<GameContextValue | undefined>(undefined);
@@ -89,6 +93,22 @@ function reducer(state: IGlobalStorage, action: Action): IGlobalStorage {
 
       return { ...state, player };
     }
+    case 'ADD_ITEM': {
+      const { itemId } = action;
+      const qty = action.qty ?? 1;
+      const inv = state.player.inventory ?? [];
+      const existingIdx = inv.findIndex((it) => it.id === itemId);
+      let newInv;
+      if (existingIdx >= 0) {
+        newInv = inv.map((it, idx) => (idx === existingIdx ? { ...it, qty: it.qty + qty } : it));
+      } else {
+        newInv = [...inv, { id: itemId, qty }];
+      }
+      return {
+        ...state,
+        player: { ...state.player, inventory: newInv },
+      };
+    }
     default:
       return state;
   }
@@ -120,8 +140,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'USE_ITEM', itemId });
   };
 
+  const handleActionEffects = (actionType: string) => {
+    if (!actionType) return;
+    if (actionType.startsWith('SCAVENGE')) {
+      const lootId = getRandomScavengeLoot(actionType);
+      if (lootId) {
+        dispatch({ type: 'ADD_ITEM', itemId: lootId, qty: 1 });
+      }
+    }
+  };
+
+  const performLocalAction = (action: ILocalAction) => {
+    if (!action) return;
+    advanceTime(action.timeCostMinutes);
+    handleActionEffects(action.nextActionType);
+  };
+
   return (
-    <GameContext.Provider value={{ state, moveTo, advanceTime, dispatch, consumeItem }}>
+    <GameContext.Provider
+      value={{ state, moveTo, advanceTime, dispatch, consumeItem, performLocalAction }}
+    >
       {children}
     </GameContext.Provider>
   );

@@ -3,7 +3,7 @@ import { useGame } from '../store/GameContext';
 import { useLocalization } from '../store/LocalizationContext';
 
 export const SceneView: React.FC = () => {
-  const { state, advanceTime } = useGame();
+  const { state, performLocalAction } = useGame();
   const { t } = useLocalization();
 
   const loc = state.map.allLocations[state.player.locationId];
@@ -16,7 +16,7 @@ export const SceneView: React.FC = () => {
       {/* actions and npc list combined here */}
       <div className="actions-panel">
         {loc.localActions.map((a) => (
-          <button key={a.nextActionType} onClick={() => advanceTime(a.timeCostMinutes)}>
+          <button key={a.nextActionType} onClick={() => performLocalAction(a)}>
             {t(a.labelKey)} <span className="time-cost">{a.timeCostMinutes}m</span>
           </button>
         ))}
