@@ -11,7 +11,7 @@ export const StatusBar: React.FC = () => {
   const mm = runtime.gameTime % 60;
 
   return (
-    <div>
+    <div className="top-bar">
       <div>
         {t('ui.day')}: {runtime.dayNumber}
       </div>

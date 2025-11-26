@@ -1,7 +1,6 @@
 {
   "info": {
-    "game_title": "下水道浮生记",
-    "welcome_message": "欢迎来到下水道浮生记，一个充满危险与机遇的城市地下世界。在这里，你必须管理好自己的资源，保持健康和理智，同时探索未知的区域，寻找生存的希望。祝你好运，幸存者！"
+    "game_title": "下水道浮生记"
   },
   "location": {
     "sewer_hideout": {
@@ -36,6 +35,9 @@
   },
   "ui": {
     "move": "移动",
+    "inventory": "物品",
+    "npcs": "人物",
+    "move_to": "前往",
     "time": "时间",
     "day": "天",
     "actions": "行动",

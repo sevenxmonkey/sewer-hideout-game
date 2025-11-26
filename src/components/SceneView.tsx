@@ -3,32 +3,28 @@ import { useGame } from '../store/GameContext';
 import { useLocalization } from '../store/LocalizationContext';
 
 export const SceneView: React.FC = () => {
-  const { state, moveTo } = useGame();
+  const { state } = useGame();
   const { t } = useLocalization();
 
   const loc = state.map.allLocations[state.player.locationId];
 
   return (
-    <div>
-      <div>--------------{t('ui.location')}--------------</div>
-      <div style={{ color: 'greenyellow', marginBottom: '4px' }}>{t(loc.nameKey)}</div>
-      <div>{t(loc.descriptionKey)}</div>
-      <div style={{ color: 'red', marginTop: '4px' }}>你现在感到很饿</div>
-      <div>--------------{t('ui.move')}--------------</div>
-      <div>
-        {loc.exits.map((e) => (
-          <button key={e.targetLocationId} onClick={() => moveTo(e.targetLocationId)}>
-            {t(e.label)} ({e.timeCostMinutes}m)
-          </button>
-        ))}
-      </div>
-
-      <div>--------------{t('ui.actions')}--------------</div>
-      <div style={{ display: 'flex', gap: 8 }}>
+    <div className="scene-view">
+      {/* <div>--------------{t('ui.location')}--------------</div> */}
+      <p style={{ color: 'greenyellow', marginBottom: '4px' }}>{t(loc.nameKey)}</p>
+      <p>{t(loc.descriptionKey)}</p>
+      {/* actions and npc list combined here */}
+      <div className="actions-panel">
         {loc.localActions.map((a) => (
           <button key={a.nextActionType}>
             {t(a.labelKey)} ({a.timeCostMinutes}m)
           </button>
+        ))}
+      </div>
+      <p>你看到了这些人</p>
+      <div>
+        {['NPC A', 'NPC B', 'NPC C'].map((n) => (
+          <button key={n}>{n}</button>
         ))}
       </div>
     </div>

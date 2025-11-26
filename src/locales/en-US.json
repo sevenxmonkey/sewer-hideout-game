@@ -1,7 +1,6 @@
 {
   "info": {
-    "game_title": "Sewer Hideout",
-    "welcome_message": "Welcome to the Sewer Hideout, a city underground world full of danger and opportunity. Here, you must manage your resources, maintain your health and sanity, and explore the unknown for a chance to survive. Good luck, survivor!"
+    "game_title": "Sewer Hideout"
   },
   "location": {
     "sewer_hideout": {
@@ -40,6 +39,9 @@
     "day": "Day",
     "actions": "Actions",
     "location": "Location",
+    "inventory": "Inventory",
+    "npcs": "NPCs",
+    "move_to": "Move to",
     "hunger": "Hunger",
     "sanity": "Sanity",
     "health": "Health",
