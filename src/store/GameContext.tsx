@@ -3,7 +3,6 @@ import type { IGlobalStorage } from '../interfaces';
 import type { ILocalAction } from '../interfaces/IMapState';
 import { initialState } from '../data/initialStateData';
 import {
-  applyTimeAdvance,
   applySatietyChange,
   applyInventoryItemUse,
   applyInventoryItemAdd,
@@ -12,6 +11,7 @@ import {
   resolveGameCommand,
   applyGameEffects,
 } from '../domain/gameLogic';
+import { applyTimeAdvance } from '../domain/timelogic';
 
 type Action =
   | { type: 'GAME_MOVE'; targetLocationId: string }

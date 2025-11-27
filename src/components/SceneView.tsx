@@ -11,19 +11,37 @@ export const SceneView: React.FC = () => {
   const npcPresences = getNpcPresencesAt(state.player.locationId, state.runtime.gameTime);
   const localActionLog = state.runtime.localActionLog;
   const npcLog = state.runtime.npcLog;
+  const locationId = state.player.locationId;
+
+  // 检查搜刮行为是否已执行
+  const isScavengeActionDisabled = (action: (typeof loc.localActions)[0]): boolean => {
+    if (!action.nextActionType.startsWith('SCAVENGE')) return false;
+    const scavengeState = state.runtime.scavengeState?.[locationId];
+    return scavengeState?.isScavenged ?? false;
+  };
 
   return (
     <div className="scene-view">
-      {/* <div>--------------{t('ui.location')}--------------</div> */}
       <p style={{ color: 'greenyellow', marginBottom: '4px' }}>{t(loc.nameKey)}</p>
       <p>{t(loc.descriptionKey)}</p>
       {/* actions and npc list combined here */}
       <div className="actions-panel">
-        {loc.localActions.map((a) => (
-          <button key={a.nextActionType} onClick={() => performLocalAction(a)}>
-            {t(a.labelKey)} <span className="time-cost">{a.timeCostMinutes}m</span>
-          </button>
-        ))}
+        {loc.localActions.map((a) => {
+          const isDisabled = isScavengeActionDisabled(a);
+          return (
+            <button
+              key={a.nextActionType}
+              onClick={() => performLocalAction(a)}
+              disabled={isDisabled}
+              style={{
+                opacity: isDisabled ? 0.6 : 1,
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {t(a.labelKey)} <span className="time-cost">{a.timeCostMinutes}m</span>
+            </button>
+          );
+        })}
       </div>
       {localActionLog && (
         <p style={{ color: 'yellow', marginTop: '4px', fontSize: '14px' }}>{t(localActionLog)}</p>

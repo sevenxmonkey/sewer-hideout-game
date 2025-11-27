@@ -41,7 +41,12 @@ export const mapData: { [id: string]: ILocation } = {
       },
     ],
     localActions: [
-      { labelKey: 'action.scavenge', nextActionType: 'SCAVENGE', timeCostMinutes: 30 },
+      {
+        labelKey: 'action.scavenge',
+        nextActionType: 'SCAVENGE',
+        timeCostMinutes: 30,
+        lootTable: ['apple', 'bread', 'coffee', 'sweets'],
+      },
     ],
   },
 
@@ -63,7 +68,12 @@ export const mapData: { [id: string]: ILocation } = {
       },
     ],
     localActions: [
-      { labelKey: 'action.scavenge', nextActionType: 'SCAVENGE_TUNNEL', timeCostMinutes: 20 },
+      {
+        labelKey: 'action.scavenge',
+        nextActionType: 'SCAVENGE',
+        timeCostMinutes: 20,
+        lootTable: ['bread', 'soup', 'bandage'],
+      },
     ],
   },
 
@@ -89,7 +99,12 @@ export const mapData: { [id: string]: ILocation } = {
       },
     ],
     localActions: [
-      { labelKey: 'action.scavenge', nextActionType: 'SCAVENGE_STATION', timeCostMinutes: 45 },
+      {
+        labelKey: 'action.scavenge',
+        nextActionType: 'SCAVENGE',
+        timeCostMinutes: 45,
+        lootTable: ['canned_beans', 'soup', 'coffee'],
+      },
     ],
   },
 
@@ -110,7 +125,12 @@ export const mapData: { [id: string]: ILocation } = {
       },
     ],
     localActions: [
-      { labelKey: 'action.scavenge', nextActionType: 'SCAVENGE_DOCK', timeCostMinutes: 40 },
+      {
+        labelKey: 'action.scavenge',
+        nextActionType: 'SCAVENGE',
+        timeCostMinutes: 40,
+        lootTable: ['bread', 'canned_beans', 'medkit'],
+      },
     ],
   },
 
@@ -132,7 +152,12 @@ export const mapData: { [id: string]: ILocation } = {
     ],
     localActions: [
       { labelKey: 'action.trade', nextActionType: 'TRADE_BLACKMARKET', timeCostMinutes: 30 },
-      { labelKey: 'action.scavenge', nextActionType: 'SCAVENGE_MARKET', timeCostMinutes: 20 },
+      {
+        labelKey: 'action.scavenge',
+        nextActionType: 'SCAVENGE',
+        timeCostMinutes: 20,
+        lootTable: ['coffee', 'sweets', 'medkit'],
+      },
     ],
   },
 };

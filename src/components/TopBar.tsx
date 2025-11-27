@@ -19,8 +19,8 @@ export const StatusBar: React.FC = () => {
         {t('ui.time')}: {String(hh).padStart(2, '0')}:{String(mm).padStart(2, '0')}
       </div>
       <div>
-        {t('ui.health')}: {player.health} | {t('ui.satiety')}: {player.satiety} | {t('ui.sanity')}:{' '}
-        {player.sanity}
+        {t('ui.health')}: {Math.round(player.health)} | {t('ui.satiety')}:{' '}
+        {Math.round(player.satiety)} | {t('ui.sanity')}: {Math.round(player.sanity)}
       </div>
     </div>
   );

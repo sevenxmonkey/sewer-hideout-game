@@ -1,5 +1,6 @@
 import type { IGlobalStorage } from '../interfaces';
 import { mapData } from './mapData';
+import { generateScavengeState } from '../domain/scavengeLogic';
 
 export const initialState: IGlobalStorage = {
   player: {
@@ -20,6 +21,7 @@ export const initialState: IGlobalStorage = {
     dayNumber: 1,
     gameTime: 480, // 8:00 AM
     isRunning: true,
+    scavengeState: generateScavengeState(), // 初始化搜刮状态
   },
   map: {
     allLocations: mapData,

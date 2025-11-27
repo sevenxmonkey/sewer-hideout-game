@@ -12,6 +12,7 @@ export interface ILocalAction {
   labelKey: string; // 动作标签的本地化键
   nextActionType: string; // 动作类型/ID (例如: 'REST_SEWER', 'SCAVENGE')
   timeCostMinutes: number; // 执行所需的时间
+  lootTable?: string[]; // 可选：搜刮时的掉落物品列表（仅用于 SCAVENGE 类 action）
 }
 
 export interface ILocation {

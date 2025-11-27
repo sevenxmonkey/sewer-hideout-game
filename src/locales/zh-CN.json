@@ -73,7 +73,8 @@
   },
   "log": {
     "scavenge": {
-      "found_generic": "你在一堆破烂里翻出了一些看起来还算有用的东西。"
+      "found_generic": "你在一堆破烂里翻出了一些看起来还算有用的东西。",
+      "already_scavenged": "你今天已经搜刮过这里了，明天再来吧。"
     },
     "action": {
       "rest": "你找了个地方坐下来，稍微休息了一会儿。",

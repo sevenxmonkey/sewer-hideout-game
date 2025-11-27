@@ -1,35 +1,10 @@
 import type { IGlobalStorage } from '../interfaces';
 import type { ILocalAction } from '../interfaces/IMapState';
-import { getRandomScavengeLoot } from '../data/scavengeData';
 import { itemDefinitions } from '../data/itemData';
+import { resolveScavengeAction, applyMarkLocationScavenged } from './scavengeLogic';
+import { applyTimeAdvance } from './timelogic';
 
 // Core game rules extracted as pure functions
-
-// 时间推进（同时处理时间与饱食度衰减）
-export function applyTimeAdvance(state: IGlobalStorage, minutes: number): IGlobalStorage {
-  if (minutes <= 0) return state;
-
-  const newTime = state.runtime.gameTime + minutes;
-  const dayIncrement = Math.floor(newTime / 1440) - Math.floor(state.runtime.gameTime / 1440);
-  const updatedGameTime = newTime % 1440;
-
-  const prevAccum = state.runtime.accumulatedMinutes ?? 0;
-  const totalAccum = prevAccum + minutes;
-  const satietyDecrease = Math.floor(totalAccum / 60);
-  const newAccum = totalAccum % 60;
-  const newSatiety = Math.max(0, Math.min(100, state.player.satiety - satietyDecrease));
-
-  return {
-    ...state,
-    player: { ...state.player, satiety: newSatiety },
-    runtime: {
-      ...state.runtime,
-      gameTime: updatedGameTime,
-      dayNumber: state.runtime.dayNumber + dayIncrement,
-      accumulatedMinutes: newAccum,
-    },
-  };
-}
 
 // 直接修改饱食度（用于事件或道具等单次变化）
 export function applySatietyChange(state: IGlobalStorage, delta: number): IGlobalStorage {
@@ -131,13 +106,14 @@ export type GameCommand =
   | { kind: 'USE_ITEM'; itemId: string; timeCostMinutes: number };
 
 export type GameEffect =
-  | { kind: 'TIME_ADVANCE'; minutes: number }
+  | { kind: 'TIME_ADVANCE'; minutes: number; isResting?: boolean }
   | { kind: 'LOCATION_SET'; locationId: string }
   | { kind: 'INVENTORY_ADD'; itemId: string; qty: number }
   | { kind: 'INVENTORY_USE'; itemId: string }
   | { kind: 'LOG_LOCAL_ACTION'; messageKey: string }
   | { kind: 'LOG_NPC'; messageKey: string }
-  | { kind: 'CLEAR_LOGS' };
+  | { kind: 'CLEAR_LOGS' }
+  | { kind: 'MARK_LOCATION_SCAVENGED'; locationId: string };
 
 // 把高层行为解析为 effect 列表（不直接修改 state）
 export function resolveGameCommand(state: IGlobalStorage, command: GameCommand): GameEffect[] {
@@ -152,16 +128,21 @@ export function resolveGameCommand(state: IGlobalStorage, command: GameCommand):
     }
     case 'PERFORM_LOCAL_ACTION': {
       const effects: GameEffect[] = [{ kind: 'TIME_ADVANCE', minutes: command.timeCostMinutes }];
-      const actionType = command.action.nextActionType;
-      if (actionType && actionType.startsWith('SCAVENGE')) {
-        const lootId = getRandomScavengeLoot(actionType);
-        if (lootId) {
-          effects.push({ kind: 'INVENTORY_ADD', itemId: lootId, qty: 1 });
-          effects.push({ kind: 'LOG_LOCAL_ACTION', messageKey: 'log.scavenge.found_generic' });
-        }
-      } else if (actionType && actionType.startsWith('REST')) {
+      const action = command.action;
+      const locationId = state.player.locationId;
+
+      // 如果是搜刮行为
+      if (
+        action.nextActionType.startsWith('SCAVENGE') &&
+        action.lootTable &&
+        action.lootTable.length > 0
+      ) {
+        return resolveScavengeAction(state, action, locationId);
+      } else if (action.nextActionType.startsWith('REST')) {
         effects.push({ kind: 'LOG_LOCAL_ACTION', messageKey: 'log.action.rest' });
-      } else if (actionType && actionType.startsWith('TRADE')) {
+        // 休息时，时间推进需要标记为休息状态，以便理智恢复而不是减少
+        effects[0] = { kind: 'TIME_ADVANCE', minutes: command.timeCostMinutes, isResting: true };
+      } else if (action.nextActionType.startsWith('TRADE')) {
         effects.push({ kind: 'LOG_LOCAL_ACTION', messageKey: 'log.action.trade' });
       }
       return effects;
@@ -198,7 +179,7 @@ export function resolveGameCommand(state: IGlobalStorage, command: GameCommand):
 export function applyGameEffect(state: IGlobalStorage, effect: GameEffect): IGlobalStorage {
   switch (effect.kind) {
     case 'TIME_ADVANCE':
-      return applyTimeAdvance(state, effect.minutes);
+      return applyTimeAdvance(state, effect.minutes, effect.isResting ?? false);
     case 'LOCATION_SET':
       return applyLocationSet(state, effect.locationId);
     case 'INVENTORY_ADD':
@@ -232,6 +213,8 @@ export function applyGameEffect(state: IGlobalStorage, effect: GameEffect): IGlo
           npcLog: undefined,
         },
       };
+    case 'MARK_LOCATION_SCAVENGED':
+      return applyMarkLocationScavenged(state, effect.locationId);
     default:
       return state;
   }
