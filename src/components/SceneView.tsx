@@ -34,7 +34,10 @@ export const SceneView: React.FC = () => {
           <span style={{ opacity: 0.7 }}>{t('npc.none')}</span>
         ) : (
           npcPresences.map(({ npc, slot }) => (
-            <button key={npc.id} onClick={() => talkToNpc(npc.id, slot.interactionKey)}>
+            <button
+              key={npc.id}
+              onClick={() => talkToNpc(npc.id, slot.interactionKey, slot.endMinutes)}
+            >
               {t(npc.nameKey)}
             </button>
           ))

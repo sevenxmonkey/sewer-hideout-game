@@ -40,6 +40,14 @@ export function applySatietyChange(state: IGlobalStorage, delta: number): IGloba
   };
 }
 
+// 改变玩家位置
+export function applyLocationSet(state: IGlobalStorage, targetLocationId: string): IGlobalStorage {
+  return {
+    ...state,
+    player: { ...state.player, locationId: targetLocationId },
+  };
+}
+
 // 向背包增加道具数量
 export function applyInventoryItemAdd(
   state: IGlobalStorage,
@@ -60,8 +68,8 @@ export function applyInventoryItemAdd(
   };
 }
 
-// 使用背包中的道具，并应用其效果
-export function applyInventoryItemUse(state: IGlobalStorage, itemId: string): IGlobalStorage {
+// 使用背包中的道具，并应用其效果（内部函数，不包含日志）
+function applyInventoryItemUseInternal(state: IGlobalStorage, itemId: string): IGlobalStorage {
   const inv = state.player.inventory ?? [];
   const idx = inv.findIndex((it) => it.id === itemId);
   if (idx === -1) return state;
@@ -90,17 +98,43 @@ export function applyInventoryItemUse(state: IGlobalStorage, itemId: string): IG
   return { ...state, player };
 }
 
+// 使用背包中的道具，并应用其效果和日志
+export function applyInventoryItemUse(state: IGlobalStorage, itemId: string): IGlobalStorage {
+  const newState = applyInventoryItemUseInternal(state, itemId);
+  // 添加道具使用的日志，同时清除 NPC log
+  const def = itemDefinitions[itemId];
+  if (def) {
+    return {
+      ...newState,
+      runtime: {
+        ...newState.runtime,
+        localActionLog: 'log.item.used',
+        npcLog: undefined, // 清除 NPC log
+      },
+    };
+  }
+  return newState;
+}
+
 // ---------- Command + Effect pipeline (for high-level behaviors) ----------
 
 export type GameCommand =
   | { kind: 'MOVE_TO'; targetLocationId: string; timeCostMinutes: number }
   | { kind: 'PERFORM_LOCAL_ACTION'; action: ILocalAction; timeCostMinutes: number }
-  | { kind: 'TALK_TO_NPC'; npcId: string; interactionKey: string; timeCostMinutes: number };
+  | {
+      kind: 'TALK_TO_NPC';
+      npcId: string;
+      interactionKey: string;
+      timeCostMinutes: number;
+      scheduleEndMinutes: number; // NPC 出现时间段的结束时间
+    }
+  | { kind: 'USE_ITEM'; itemId: string; timeCostMinutes: number };
 
 export type GameEffect =
   | { kind: 'TIME_ADVANCE'; minutes: number }
   | { kind: 'LOCATION_SET'; locationId: string }
   | { kind: 'INVENTORY_ADD'; itemId: string; qty: number }
+  | { kind: 'INVENTORY_USE'; itemId: string }
   | { kind: 'LOG_LOCAL_ACTION'; messageKey: string }
   | { kind: 'LOG_NPC'; messageKey: string }
   | { kind: 'CLEAR_LOGS' };
@@ -137,6 +171,22 @@ export function resolveGameCommand(state: IGlobalStorage, command: GameCommand):
         { kind: 'TIME_ADVANCE', minutes: command.timeCostMinutes },
         { kind: 'LOG_NPC', messageKey: command.interactionKey },
       ];
+      // 检查对话后时间是否会超出 NPC 出现时间段
+      const currentMinutes = state.runtime.gameTime % 1440;
+      const totalMinutes = currentMinutes + command.timeCostMinutes;
+      const willExceedSchedule =
+        totalMinutes >= command.scheduleEndMinutes || // 超出时间段结束时间
+        totalMinutes >= 1440; // 跨天（无论 scheduleEndMinutes 是多少，跨天都应该清除）
+      if (willExceedSchedule) {
+        effects.push({ kind: 'CLEAR_LOGS' });
+      }
+      return effects;
+    }
+    case 'USE_ITEM': {
+      const effects: GameEffect[] = [
+        { kind: 'TIME_ADVANCE', minutes: command.timeCostMinutes },
+        { kind: 'INVENTORY_USE', itemId: command.itemId },
+      ];
       return effects;
     }
     default:
@@ -150,12 +200,11 @@ export function applyGameEffect(state: IGlobalStorage, effect: GameEffect): IGlo
     case 'TIME_ADVANCE':
       return applyTimeAdvance(state, effect.minutes);
     case 'LOCATION_SET':
-      return {
-        ...state,
-        player: { ...state.player, locationId: effect.locationId },
-      };
+      return applyLocationSet(state, effect.locationId);
     case 'INVENTORY_ADD':
       return applyInventoryItemAdd(state, effect.itemId, effect.qty);
+    case 'INVENTORY_USE':
+      return applyInventoryItemUse(state, effect.itemId);
     case 'LOG_LOCAL_ACTION':
       return {
         ...state,

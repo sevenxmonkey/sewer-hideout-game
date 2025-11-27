@@ -7,11 +7,11 @@ import {
   applySatietyChange,
   applyInventoryItemUse,
   applyInventoryItemAdd,
+  applyLocationSet,
   type GameCommand,
   resolveGameCommand,
   applyGameEffects,
 } from '../domain/gameLogic';
-import { itemDefinitions } from '../data/itemData';
 
 type Action =
   | { type: 'GAME_MOVE'; targetLocationId: string }
@@ -28,40 +28,21 @@ type GameContextValue = {
   dispatch: React.Dispatch<Action>;
   consumeItem: (itemId: string) => void;
   performLocalAction: (action: ILocalAction) => void;
-  talkToNpc: (npcId: string, interactionKey: string) => void;
+  talkToNpc: (npcId: string, interactionKey: string, scheduleEndMinutes: number) => void;
 };
 
 const GameContext = createContext<GameContextValue | undefined>(undefined);
 
 function reducer(state: IGlobalStorage, action: Action): IGlobalStorage {
   switch (action.type) {
-    case 'GAME_MOVE': {
-      // only change location here; time advancement handled by advanceTime helper
-      return {
-        ...state,
-        player: { ...state.player, locationId: action.targetLocationId },
-      };
-    }
+    case 'GAME_MOVE':
+      return applyLocationSet(state, action.targetLocationId);
     case 'GAME_TIME_ADVANCE':
       return applyTimeAdvance(state, action.minutes);
     case 'GAME_SATIETY_CHANGE':
       return applySatietyChange(state, action.delta);
-    case 'GAME_ITEM_USE': {
-      const newState = applyInventoryItemUse(state, action.itemId);
-      // 添加道具使用的日志，同时清除 NPC log
-      const def = itemDefinitions[action.itemId];
-      if (def) {
-        return {
-          ...newState,
-          runtime: {
-            ...newState.runtime,
-            localActionLog: 'log.item.used',
-            npcLog: undefined, // 清除 NPC log
-          },
-        };
-      }
-      return newState;
-    }
+    case 'GAME_ITEM_USE':
+      return applyInventoryItemUse(state, action.itemId);
     case 'GAME_ITEM_ADD':
       return applyInventoryItemAdd(state, action.itemId, action.qty);
     case 'GAME_COMMAND': {
@@ -92,7 +73,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const consumeItem = (itemId: string) => {
-    dispatch({ type: 'GAME_ITEM_USE', itemId });
+    const command: GameCommand = {
+      kind: 'USE_ITEM',
+      itemId,
+      timeCostMinutes: 10,
+    };
+    dispatch({ type: 'GAME_COMMAND', command });
   };
 
   const performLocalAction = (action: ILocalAction) => {
@@ -105,13 +91,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'GAME_COMMAND', command });
   };
 
-  const talkToNpc = (npcId: string, interactionKey: string) => {
+  const talkToNpc = (npcId: string, interactionKey: string, scheduleEndMinutes: number) => {
     // NPC 对话消耗 5 分钟
     const command: GameCommand = {
       kind: 'TALK_TO_NPC',
       npcId,
       interactionKey,
       timeCostMinutes: 5,
+      scheduleEndMinutes,
     };
     dispatch({ type: 'GAME_COMMAND', command });
   };
