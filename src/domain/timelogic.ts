@@ -2,11 +2,13 @@ import type { IGlobalStorage } from '../interfaces';
 import { resetScavengeState } from './scavengeLogic';
 import {
   SATIETY_DECREASE_PER_MINUTE,
+  SATIETY_HIGH_THRESHOLD,
   SATIETY_THRESHOLD_FOR_HEALTH_DECREASE,
   SANITY_DECREASE_PER_MINUTE,
   SANITY_THRESHOLD_FOR_HEALTH_DECREASE,
   SANITY_INCREASE_PER_MINUTE_WHEN_RESTING,
   HEALTH_DECREASE_PER_MINUTE,
+  HEALTH_HIGH_THRESHOLD,
 } from '../data/constants';
 
 // 计算饱食度、理智和健康的变化（基于时间推进）
@@ -23,8 +25,16 @@ export function calculateSatietyAndHealthChange(
 } {
   const prevAccum = state.runtime.accumulatedMinutes ?? 0;
   const totalAccum = prevAccum + minutes;
-  // 每分钟降低 SATIETY_DECREASE_PER_MINUTE 饱食度
-  const satietyDecrease = totalAccum * SATIETY_DECREASE_PER_MINUTE;
+
+  // 根据当前饱食度决定下降速率：80-100 时为正常速率的一半
+  const currentSatiety = state.player.satiety;
+  const decreaseRate =
+    currentSatiety >= SATIETY_HIGH_THRESHOLD
+      ? SATIETY_DECREASE_PER_MINUTE * 0.2
+      : SATIETY_DECREASE_PER_MINUTE;
+
+  // 每分钟降低饱食度（速率根据当前饱食度调整）
+  const satietyDecrease = totalAccum * decreaseRate;
   const newAccum = 0; // 不再需要累计，因为现在是连续计算
   const newSatiety = Math.max(0, Math.min(100, state.player.satiety - satietyDecrease));
 
@@ -48,7 +58,13 @@ export function calculateSatietyAndHealthChange(
     newSanity < SANITY_THRESHOLD_FOR_HEALTH_DECREASE
   ) {
     // 饱食度或理智低于阈值，每分钟降低健康（不累加，只应用一次）
-    const healthDecrease = minutes * HEALTH_DECREASE_PER_MINUTE;
+    // 根据当前健康值决定下降速率：大于 80 时为正常速率的 0.2 倍
+    const currentHealth = state.player.health;
+    const healthDecreaseRate =
+      currentHealth > HEALTH_HIGH_THRESHOLD
+        ? HEALTH_DECREASE_PER_MINUTE * 0.2
+        : HEALTH_DECREASE_PER_MINUTE;
+    const healthDecrease = minutes * healthDecreaseRate;
     newHealth = Math.max(0, newHealth - healthDecrease);
   }
 
